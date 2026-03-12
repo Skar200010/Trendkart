@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -17,6 +17,7 @@ interface Product {
   discount: number;
   rating: number;
   image: string;
+  createdAt?: string;
 }
 
 const tabs = [
@@ -41,6 +42,10 @@ export default function AdminPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [brandFilter, setBrandFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('newest');
 
   const [productForm, setProductForm] = useState({
     title: '',
@@ -84,6 +89,47 @@ export default function AdminPage() {
       setProductsLoading(false);
     }
   };
+
+  const availableBrands = Array.from(new Set(products.map(p => p.brand))).sort();
+
+  const filteredAndSortedProducts = useMemo(() => {
+    let result = [...products];
+    
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(p => 
+        p.title.toLowerCase().includes(query) || 
+        p.brand.toLowerCase().includes(query)
+      );
+    }
+    
+    if (categoryFilter !== 'all') {
+      result = result.filter(p => p.category === categoryFilter);
+    }
+    
+    if (brandFilter !== 'all') {
+      result = result.filter(p => p.brand === brandFilter);
+    }
+    
+    switch (sortBy) {
+      case 'oldest':
+        result.sort((a, b) => new Date(a.createdAt || '').getTime() - new Date(b.createdAt || '').getTime());
+        break;
+      case 'price-low':
+        result.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-high':
+        result.sort((a, b) => b.price - a.price);
+        break;
+      case 'rating':
+        result.sort((a, b) => b.rating - a.rating);
+        break;
+      default:
+        result.sort((a, b) => new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime());
+    }
+    
+    return result;
+  }, [products, searchQuery, categoryFilter, brandFilter, sortBy]);
 
   if (!isAuthenticated) {
     return null;
@@ -374,7 +420,79 @@ export default function AdminPage() {
               </div>
 
               <div>
-                <h2 className="text-xl font-semibold text-text-primary mb-4">Existing Products</h2>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                  <h2 className="text-xl font-semibold text-text-primary">Product Inventory</h2>
+                  <p className="text-text-secondary text-sm">{products.length} total products</p>
+                </div>
+
+                <div className="card p-4 mb-6">
+                  <div className="flex flex-col lg:flex-row gap-4">
+                    <div className="flex-1">
+                      <div className="relative">
+                        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input
+                          type="text"
+                          placeholder="Search products..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="w-full pl-10 pr-4 py-2.5 bg-background border border-text-secondary/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                      <select
+                        value={categoryFilter}
+                        onChange={(e) => setCategoryFilter(e.target.value)}
+                        className="px-4 py-2.5 bg-background border border-text-secondary/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-text-primary"
+                      >
+                        <option value="all">All Categories</option>
+                        <option value="men">Men</option>
+                        <option value="women">Women</option>
+                      </select>
+                      <select
+                        value={brandFilter}
+                        onChange={(e) => setBrandFilter(e.target.value)}
+                        className="px-4 py-2.5 bg-background border border-text-secondary/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-text-primary"
+                      >
+                        <option value="all">All Brands</option>
+                        {availableBrands.map(brand => (
+                          <option key={brand} value={brand}>{brand}</option>
+                        ))}
+                      </select>
+                      <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className="px-4 py-2.5 bg-background border border-text-secondary/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-text-primary"
+                      >
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="rating">Highest Rated</option>
+                      </select>
+                    </div>
+                  </div>
+                  {(searchQuery || categoryFilter !== 'all' || brandFilter !== 'all') && (
+                    <div className="mt-4 flex items-center gap-2">
+                      <span className="text-sm text-text-secondary">
+                        Showing {filteredAndSortedProducts.length} of {products.length} products
+                      </span>
+                      <button
+                        onClick={() => {
+                          setSearchQuery('');
+                          setCategoryFilter('all');
+                          setBrandFilter('all');
+                        }}
+                        className="text-sm text-primary hover:text-primary/80"
+                      >
+                        Clear filters
+                      </button>
+                    </div>
+                  )}
+                </div>
+
                 {productsLoading ? (
                   <div className="flex items-center justify-center py-12">
                     <svg className="animate-spin w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24">
@@ -382,30 +500,73 @@ export default function AdminPage() {
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
                   </div>
-                ) : products.length === 0 ? (
+                ) : filteredAndSortedProducts.length === 0 ? (
                   <div className="card p-8 text-center">
-                    <p className="text-text-secondary">No products found. Add your first product above.</p>
+                    <svg className="w-16 h-16 mx-auto text-text-secondary/50 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                    <p className="text-text-secondary mb-4">
+                      {products.length === 0 ? 'No products found. Add your first product above.' : 'No products match your filters.'}
+                    </p>
+                    {products.length > 0 && (
+                      <button
+                        onClick={() => {
+                          setSearchQuery('');
+                          setCategoryFilter('all');
+                          setBrandFilter('all');
+                        }}
+                        className="text-primary hover:text-primary/80 font-medium"
+                      >
+                        Clear filters
+                      </button>
+                    )}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {products.map((product) => (
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+                    {filteredAndSortedProducts.map((product, index) => (
                       <motion.div
                         key={product._id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="card p-4"
+                        transition={{ delay: index * 0.03 }}
+                        className="card p-4 hover:border-primary/30 transition-colors group"
                       >
                         <div className="flex gap-4">
-                          <div className="w-20 h-20 rounded-lg overflow-hidden bg-background flex-shrink-0">
+                          <div className="w-24 h-24 rounded-lg overflow-hidden bg-background flex-shrink-0">
                             <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-text-primary truncate">{product.title}</h3>
-                            <p className="text-sm text-text-secondary">{product.brand}</p>
-                            <p className="text-primary font-bold">₹{product.price}</p>
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="min-w-0">
+                                <h3 className="font-semibold text-text-primary truncate group-hover:text-primary transition-colors">{product.title}</h3>
+                                <p className="text-sm text-text-secondary">{product.brand}</p>
+                              </div>
+                              <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                                product.category === 'men' 
+                                  ? 'bg-blue-500/10 text-blue-400' 
+                                  : 'bg-pink-500/10 text-pink-400'
+                              }`}>
+                                {product.category.charAt(0).toUpperCase() + product.category.slice(1)}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2 mt-2">
+                              <span className="text-lg font-bold text-primary">₹{product.price}</span>
+                              {product.discount > 0 && (
+                                <span className="text-sm text-text-secondary line-through">₹{Math.round(product.price / (1 - product.discount/100))}</span>
+                              )}
+                              {product.discount > 0 && (
+                                <span className="text-xs bg-green-500/10 text-green-400 px-1.5 py-0.5 rounded">{product.discount}% OFF</span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-1 mt-1">
+                              <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                              </svg>
+                              <span className="text-sm text-text-secondary">{product.rating}</span>
+                            </div>
                           </div>
                         </div>
-                        <div className="flex gap-2 mt-4">
+                        <div className="flex gap-2 mt-4 pt-4 border-t border-text-secondary/10">
                           <Link
                             href={`/admin/product-edit/${product._id}`}
                             className="flex-1 inline-flex items-center justify-center gap-1 bg-primary/10 hover:bg-primary/20 text-primary px-3 py-2 rounded-lg text-sm font-medium transition-colors"

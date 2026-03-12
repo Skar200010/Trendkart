@@ -3,6 +3,7 @@ import ProductGrid from '@/components/ProductGrid';
 import BlogGrid from '@/components/BlogGrid';
 import HeroSection from '@/components/HeroSection';
 import CategoryBanners from '@/components/CategoryBanners';
+import StyleQuiz from '@/components/StyleQuiz';
 import { connectDB } from '@/lib/db';
 import Product from '@/models/Product';
 import Post from '@/models/Post';
@@ -82,6 +83,8 @@ export default async function Home() {
       <ProductGrid products={bestUnder999} />
 
       <CategoryBanners />
+
+      <StyleQuiz />
 
       <BlogGrid 
         posts={posts} 

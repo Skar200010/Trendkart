@@ -4,6 +4,7 @@ import BlogGrid from '@/components/BlogGrid';
 import HeroSection from '@/components/HeroSection';
 import CategoryBanners from '@/components/CategoryBanners';
 import StyleQuiz from '@/components/StyleQuiz';
+import ArchitectureDiagram from '@/components/ArchitectureDiagram';
 import { connectDB } from '@/lib/db';
 import Product from '@/models/Product';
 import Post from '@/models/Post';
@@ -85,6 +86,8 @@ export default async function Home() {
       <CategoryBanners />
 
       <StyleQuiz />
+
+      <ArchitectureDiagram />
 
       <BlogGrid 
         posts={posts} 

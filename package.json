@@ -14,13 +14,17 @@
     "@ai-sdk/react": "^3.0.118",
     "ai": "^6.0.116",
     "axios": "^1.13.6",
+    "bcryptjs": "^3.0.3",
     "framer-motion": "^12.35.0",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.2.3",
     "next": "14.2.35",
     "react": "^18",
     "react-dom": "^18"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

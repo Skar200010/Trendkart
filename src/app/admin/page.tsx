@@ -34,7 +34,7 @@ const tabs = [
 ];
 
 export default function AdminPage() {
-  const { isAuthenticated, logout } = useAuth();
+  const { user, loading: authLoading, logout } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'products' | 'posts'>('products');
   const [loading, setLoading] = useState(false);
@@ -67,16 +67,16 @@ export default function AdminPage() {
   });
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!user || user.role !== 'admin') {
       router.push('/login');
     }
-  }, [isAuthenticated, router]);
+  }, [user, router]);
 
   useEffect(() => {
-    if (isAuthenticated && activeTab === 'products') {
+    if (user && activeTab === 'products') {
       fetchProducts();
     }
-  }, [isAuthenticated, activeTab]);
+  }, [user, activeTab]);
 
   const fetchProducts = async () => {
     setProductsLoading(true);
@@ -131,7 +131,7 @@ export default function AdminPage() {
     return result;
   }, [products, searchQuery, categoryFilter, brandFilter, sortBy]);
 
-  if (!isAuthenticated) {
+  if (!user) {
     return null;
   }
 

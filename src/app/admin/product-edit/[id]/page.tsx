@@ -21,7 +21,7 @@ interface Product {
 }
 
 export default function EditProductPage() {
-  const { isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
   const params = useParams();
   const productId = params.id as string;
@@ -43,16 +43,16 @@ export default function EditProductPage() {
   });
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!user) {
       router.push('/login');
     }
-  }, [isAuthenticated, router]);
+  }, [user, router]);
 
   useEffect(() => {
-    if (isAuthenticated && productId) {
+    if (user && productId) {
       fetchProduct();
     }
-  }, [isAuthenticated, productId]);
+  }, [user, productId]);
 
   const fetchProduct = async () => {
     setFetching(true);
@@ -100,7 +100,7 @@ export default function EditProductPage() {
     }
   };
 
-  if (!isAuthenticated || fetching) {
+  if (!user || fetching) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <svg className="animate-spin w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24">

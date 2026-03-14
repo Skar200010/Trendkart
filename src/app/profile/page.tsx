@@ -40,47 +40,47 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-12 px-4">
-      <div className="absolute inset-0 premium-gradient-bg">
-        <div className="gradient-blob-1 -top-40 -left-40" />
-        <div className="gradient-blob-2 -bottom-40 -right-40" />
+    <div className="min-h-screen bg-background py-8 sm:py-12 px-3 sm:px-4 overflow-x-hidden">
+      <div className="absolute inset-0 premium-gradient-bg overflow-hidden">
+        <div className="gradient-blob-1 -top-20 sm:-top-40 -left-20 sm:-left-40 w-64 h-64 sm:w-[600px] sm:h-[600px]" />
+        <div className="gradient-blob-2 -bottom-20 sm:-bottom-40 -right-20 sm:-right-40 w-48 h-48 sm:w-[500px] sm:h-[500px]" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background" />
       </div>
 
-      <div className="relative max-w-2xl mx-auto">
+      <div className="relative max-w-2xl mx-auto w-full px-0 sm:px-2">
         <motion.div
           initial={{ opacity: 0, y: 30, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
-          className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/10 overflow-hidden"
+          className="bg-white/10 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl border border-white/10 overflow-hidden w-full"
         >
-          <div className="h-32 bg-gradient-to-r from-primary via-blue-500 to-purple-600 relative">
+          <div className="h-24 sm:h-32 bg-gradient-to-r from-primary via-blue-500 to-purple-600 relative">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.3, type: 'spring' }}
-              className="absolute -bottom-12 left-8"
+              className="absolute -bottom-10 sm:-bottom-12 left-4 sm:left-8"
             >
-              <div className="w-24 h-24 bg-white rounded-2xl shadow-xl flex items-center justify-center">
-                <span className="text-4xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-xl sm:rounded-2xl shadow-xl flex items-center justify-center">
+                <span className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
                   {user.name.charAt(0).toUpperCase()}
                 </span>
               </div>
             </motion.div>
           </div>
 
-          <div className="pt-16 pb-8 px-8">
+          <div className="pt-12 sm:pt-16 pb-6 sm:pb-8 px-4 sm:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
                 <div>
-                  <h1 className="text-3xl font-bold text-white">{user.name}</h1>
-                  <p className="text-gray-400 mt-1">{user.email}</p>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-white">{user.name}</h1>
+                  <p className="text-gray-400 mt-1 text-sm sm:text-base">{user.email}</p>
                 </div>
-                <span className="px-4 py-1.5 bg-green-500/20 text-green-400 text-sm font-medium rounded-full border border-green-500/30">
+                <span className="self-start sm:self-auto px-3 py-1 sm:px-4 sm:py-1.5 bg-green-500/20 text-green-400 text-xs sm:text-sm font-medium rounded-full border border-green-500/30">
                   Verified Customer
                 </span>
               </div>
@@ -90,25 +90,25 @@ export default function ProfilePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="border-t border-white/10 pt-6"
+              className="border-t border-white/10 pt-4 sm:pt-6"
             >
-              <h2 className="text-lg font-semibold text-white mb-4">Account Information</h2>
+              <h2 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">Account Information</h2>
               <div className="space-y-1">
-                <div className="flex justify-between items-center py-3 px-4 bg-white/5 rounded-xl">
-                  <span className="text-gray-400">Full Name</span>
-                  <span className="text-white font-medium">{user.name}</span>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-3 px-3 sm:px-4 bg-white/5 rounded-xl gap-1 sm:gap-0">
+                  <span className="text-gray-400 text-sm">Full Name</span>
+                  <span className="text-white font-medium text-sm sm:text-base">{user.name}</span>
                 </div>
-                <div className="flex justify-between items-center py-3 px-4 bg-white/5 rounded-xl">
-                  <span className="text-gray-400">Email Address</span>
-                  <span className="text-white font-medium">{user.email}</span>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-3 px-3 sm:px-4 bg-white/5 rounded-xl gap-1 sm:gap-0">
+                  <span className="text-gray-400 text-sm">Email Address</span>
+                  <span className="text-white font-medium text-sm sm:text-base">{user.email}</span>
                 </div>
-                <div className="flex justify-between items-center py-3 px-4 bg-white/5 rounded-xl">
-                  <span className="text-gray-400">Account Type</span>
-                  <span className="text-blue-400 font-medium">Customer</span>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-3 px-3 sm:px-4 bg-white/5 rounded-xl gap-1 sm:gap-0">
+                  <span className="text-gray-400 text-sm">Account Type</span>
+                  <span className="text-blue-400 font-medium text-sm sm:text-base">Customer</span>
                 </div>
-                <div className="flex justify-between items-center py-3 px-4 bg-white/5 rounded-xl">
-                  <span className="text-gray-400">Member Since</span>
-                  <span className="text-white font-medium">New User</span>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-3 px-3 sm:px-4 bg-white/5 rounded-xl gap-1 sm:gap-0">
+                  <span className="text-gray-400 text-sm">Member Since</span>
+                  <span className="text-white font-medium text-sm sm:text-base">New User</span>
                 </div>
               </div>
             </motion.div>
@@ -117,12 +117,12 @@ export default function ProfilePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="mt-8 flex gap-4"
+              className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4"
             >
-              <button className="flex-1 py-3 px-6 bg-gradient-to-r from-primary to-blue-600 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-primary/25 transition-all duration-300">
+              <button className="w-full sm:flex-1 py-3 px-4 sm:px-6 bg-gradient-to-r from-primary to-blue-600 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 text-sm sm:text-base">
                 Edit Profile
               </button>
-              <button className="py-3 px-6 bg-white/10 text-white font-semibold rounded-xl border border-white/20 hover:bg-white/20 transition-all duration-300">
+              <button className="w-full py-3 px-4 sm:px-6 bg-white/10 text-white font-semibold rounded-xl border border-white/20 hover:bg-white/20 transition-all duration-300 text-sm sm:text-base">
                 Change Password
               </button>
             </motion.div>

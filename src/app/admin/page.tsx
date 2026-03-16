@@ -82,7 +82,7 @@ export default function AdminPage() {
     setProductsLoading(true);
     try {
       const res = await axios.get('/api/products');
-      setProducts(res.data);
+      setProducts(res.data.products);
     } catch (error) {
       console.error('Failed to fetch products:', error);
     } finally {
@@ -90,16 +90,16 @@ export default function AdminPage() {
     }
   };
 
-  const availableBrands = Array.from(new Set(products.map(p => p.brand))).sort();
+  const availableBrands = Array.from(new Set((products || []).map(p => p.brand).filter(Boolean))).sort();
 
   const filteredAndSortedProducts = useMemo(() => {
-    let result = [...products];
+    let result = [...(products || [])];
     
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter(p => 
         p.title.toLowerCase().includes(query) || 
-        p.brand.toLowerCase().includes(query)
+        (p.brand && p.brand.toLowerCase().includes(query))
       );
     }
     

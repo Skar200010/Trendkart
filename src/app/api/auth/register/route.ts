@@ -2,21 +2,36 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
+import { validateRegistrationInput, sanitizeInput } from "@/lib/validation";
+import { authRateLimiter } from "@/lib/rateLimit";
 
 export async function POST(req: Request) {
   try {
+    const rateLimitResult = await authRateLimiter(req, { ip: req.headers.get('x-forwarded-for') || 'unknown' });
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: rateLimitResult.error },
+        { status: 429, headers: { 'Retry-After': String(rateLimitResult.retryAfter) } }
+      );
+    }
+
     await connectDB();
 
-    const { name, email, password } = await req.json();
+    const body = await req.json();
+    const { name, email, password } = body;
 
-    if (!name || !email || !password) {
+    const validation = validateRegistrationInput({ name, email, password });
+    if (!validation.valid) {
       return NextResponse.json(
-        { error: "All fields are required" },
+        { error: validation.errors.join(', ') },
         { status: 400 }
       );
     }
 
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    const sanitizedName = sanitizeInput(name);
+    const sanitizedEmail = sanitizeInput(email).toLowerCase();
+
+    const existingUser = await User.findOne({ email: sanitizedEmail });
     if (existingUser) {
       return NextResponse.json(
         { error: "Email already registered" },
@@ -27,8 +42,8 @@ export async function POST(req: Request) {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     const user = await User.create({
-      name,
-      email: email.toLowerCase(),
+      name: sanitizedName,
+      email: sanitizedEmail,
       password: hashedPassword,
       role: "customer",
     });

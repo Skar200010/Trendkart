@@ -19,8 +19,49 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "TrendKart - Your Fashion Destination",
-  description: "Discover the latest trends in men's and women's fashion",
+  title: {
+    default: "TrendKart - Your Fashion Destination",
+    template: "%s | TrendKart",
+  },
+  description: "Discover the latest trends in men's and women's fashion. Shop trending styles, compare prices, and find the best deals on TrendKart.",
+  keywords: ["fashion", "clothing", "men's fashion", "women's fashion", "shopping", "trendy", "online shopping"],
+  authors: [{ name: "TrendKart" }],
+  creator: "TrendKart",
+  publisher: "TrendKart",
+  metadataBase: new URL("https://trendkart.com"),
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://trendkart.com",
+    siteName: "TrendKart",
+    title: "TrendKart - Your Fashion Destination",
+    description: "Discover the latest trends in men's and women's fashion",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "TrendKart",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "TrendKart - Your Fashion Destination",
+    description: "Discover the latest trends in men's and women's fashion",
+    images: ["/og-image.jpg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({

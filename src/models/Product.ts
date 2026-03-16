@@ -24,15 +24,16 @@ const ProductSchema = new Schema<IProduct>(
       type: String,
       enum: ["men", "women"],
       required: true,
+      index: true,
     },
 
-    brand: { type: String, required: true, trim: true },
+    brand: { type: String, required: true, trim: true, index: true },
 
-    price: { type: Number, required: true },
+    price: { type: Number, required: true, index: true },
 
     discount: { type: Number, default: 0 },
 
-    rating: { type: Number, default: 0, min: 0, max: 5 },
+    rating: { type: Number, default: 0, min: 0, max: 5, index: true },
 
     image: { type: String, required: true },
 
@@ -40,6 +41,9 @@ const ProductSchema = new Schema<IProduct>(
   },
   { timestamps: true }
 );
+
+ProductSchema.index({ category: 1, price: 1 });
+ProductSchema.index({ title: 'text', brand: 'text' });
 
 export default mongoose.models.Product ||
   mongoose.model<IProduct>("Product", ProductSchema);

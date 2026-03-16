@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
+import { validateLoginInput, sanitizeInput } from "@/lib/validation";
+import { authRateLimiter } from "@/lib/rateLimit";
 
 const JWT_SECRET = process.env.JWT_SECRET || "trendkart-secret-key";
 const ADMIN_EMAIL = "admin@trendkart.com";
@@ -10,21 +12,33 @@ const ADMIN_PASSWORD = "trendkart123";
 
 export async function POST(req: Request) {
   try {
+    const rateLimitResult = await authRateLimiter(req, { ip: req.headers.get('x-forwarded-for') || 'unknown' });
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: rateLimitResult.error },
+        { status: 429, headers: { 'Retry-After': String(rateLimitResult.retryAfter) } }
+      );
+    }
+
     await connectDB();
 
-    const { email, password } = await req.json();
+    const body = await req.json();
+    const { email, password } = body;
 
-    if (!email || !password) {
+    const validation = validateLoginInput({ email, password });
+    if (!validation.valid) {
       return NextResponse.json(
-        { error: "Email and password are required" },
+        { error: validation.errors.join(', ') },
         { status: 400 }
       );
     }
 
+    const sanitizedEmail = sanitizeInput(email).toLowerCase();
+
     let user = null;
     let role = "customer";
 
-    if (email.toLowerCase() === ADMIN_EMAIL) {
+    if (sanitizedEmail === ADMIN_EMAIL) {
       if (password !== ADMIN_PASSWORD) {
         return NextResponse.json(
           { error: "Invalid credentials" },
@@ -34,7 +48,7 @@ export async function POST(req: Request) {
       role = "admin";
       user = { _id: "admin", name: "Admin", email: ADMIN_EMAIL, role: "admin" };
     } else {
-      user = await User.findOne({ email: email.toLowerCase() });
+      user = await User.findOne({ email: sanitizedEmail });
       if (!user) {
         return NextResponse.json(
           { error: "Invalid credentials" },

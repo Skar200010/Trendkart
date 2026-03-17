@@ -9,6 +9,8 @@ import { connectDB } from '@/lib/db';
 import Product from '@/models/Product';
 import Post from '@/models/Post';
 
+export const dynamic = 'force-dynamic';
+
 async function getProducts() {
   try {
     await connectDB();

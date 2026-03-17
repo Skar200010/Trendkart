@@ -59,6 +59,17 @@ export default function AdminPage() {
     affiliateLink: '',
   });
 
+  const calculatedPrice = useMemo(() => {
+    const price = parseFloat(productForm.price) || 0;
+    const discount = parseFloat(productForm.discount) || 0;
+    const discountAmount = price * (discount / 100);
+    return {
+      original: price,
+      discountAmount,
+      final: price - discountAmount,
+    };
+  }, [productForm.price, productForm.discount]);
+
   const [postForm, setPostForm] = useState({
     title: '',
     slug: '',
@@ -293,8 +304,10 @@ export default function AdminPage() {
             >
               <div className="mb-8">
                 <h2 className="text-xl font-semibold text-text-primary mb-4">Add New Product</h2>
-                <form onSubmit={handleProductSubmit} className="card p-6 md:p-8 space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-2">
+                    <form onSubmit={handleProductSubmit} className="card p-6 md:p-8 space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="md:col-span-2">
                       <label className="block text-sm font-medium mb-2 text-text-secondary">Product Title</label>
                       <input
@@ -417,6 +430,55 @@ export default function AdminPage() {
                     )}
                   </motion.button>
                 </form>
+                  </div>
+
+                  <div className="lg:col-span-1">
+                    <div className="card p-6 sticky top-6">
+                      <h3 className="text-lg font-semibold text-text-primary mb-4">Price Calculator</h3>
+                      
+                      <div className="space-y-4">
+                        <div className="p-4 bg-background rounded-xl border border-text-secondary/10">
+                          <p className="text-sm text-text-secondary mb-1">Original Price</p>
+                          <p className="text-2xl font-bold text-text-primary">₹{calculatedPrice.original.toFixed(0)}</p>
+                        </div>
+
+                        <div className="p-4 bg-green-500/10 rounded-xl border border-green-500/20">
+                          <p className="text-sm text-green-400 mb-1">Discount ({productForm.discount || 0}%)</p>
+                          <p className="text-2xl font-bold text-green-400">-₹{calculatedPrice.discountAmount.toFixed(0)}</p>
+                        </div>
+
+                        <div className="p-4 gradient-bg rounded-xl">
+                          <p className="text-sm text-white/80 mb-1">Final Price</p>
+                          <p className="text-3xl font-bold text-white">₹{calculatedPrice.final.toFixed(0)}</p>
+                        </div>
+
+                        <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
+                          <p className="text-sm text-blue-400">You Save</p>
+                          <p className="text-lg font-semibold text-blue-400">₹{calculatedPrice.discountAmount.toFixed(0)}</p>
+                        </div>
+                      </div>
+
+                      <div className="mt-6 pt-4 border-t border-text-secondary/10">
+                        <p className="text-sm text-text-secondary mb-3">Quick Set Discount:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {[0, 10, 20, 30, 40, 50].map((d) => (
+                            <button
+                              key={d}
+                              onClick={() => setProductForm({ ...productForm, discount: d.toString() })}
+                              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                                parseFloat(productForm.discount || '0') === d
+                                  ? 'bg-primary text-white'
+                                  : 'bg-background text-text-secondary hover:bg-primary/10 hover:text-primary'
+                              }`}
+                            >
+                              {d}%
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div>

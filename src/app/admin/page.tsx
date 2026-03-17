@@ -550,9 +550,13 @@ export default function AdminPage() {
                               </span>
                             </div>
                             <div className="flex items-center gap-2 mt-2">
-                              <span className="text-lg font-bold text-primary">₹{product.price}</span>
+                              <span className="text-lg font-bold text-primary">
+                                ₹{product.discount > 0 
+                                  ? Math.round(product.price - (product.price * product.discount / 100))
+                                  : product.price}
+                              </span>
                               {product.discount > 0 && (
-                                <span className="text-sm text-text-secondary line-through">₹{Math.round(product.price / (1 - product.discount/100))}</span>
+                                <span className="text-sm text-text-secondary line-through">₹{product.price}</span>
                               )}
                               {product.discount > 0 && (
                                 <span className="text-xs bg-green-500/10 text-green-400 px-1.5 py-0.5 rounded">{product.discount}% OFF</span>

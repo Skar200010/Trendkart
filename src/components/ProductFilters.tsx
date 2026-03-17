@@ -7,6 +7,7 @@ import type { IProduct } from '@/models/Product';
 
 interface ProductFiltersProps {
   products: IProduct[];
+  brands: string[];
 }
 
 const brands = ['All', 'Nike', 'Adidas', 'Puma', 'Zara', 'H&M', 'Levis', 'Raymond'];
@@ -28,7 +29,7 @@ const discountRanges = [
   { label: '10% or more', min: 10 },
 ];
 
-export default function ProductFilters({ products }: ProductFiltersProps) {
+export default function ProductFilters({ products, brands }: ProductFiltersProps) {
   const [selectedBrand, setSelectedBrand] = useState('All');
   const [selectedPriceRange, setSelectedPriceRange] = useState(0);
   const [selectedRating, setSelectedRating] = useState(0);
@@ -124,7 +125,7 @@ export default function ProductFilters({ products }: ProductFiltersProps) {
               <div>
                 <h4 className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-3">Brand</h4>
                 <div className="flex flex-wrap gap-2">
-                  {brands.map((brand) => (
+                  {['All', ...brands].map((brand) => (
                     <button
                       key={brand}
                       onClick={() => setSelectedBrand(brand)}

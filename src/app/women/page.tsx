@@ -20,8 +20,20 @@ async function getWomenProducts() {
   }
 }
 
+async function getWomenBrands() {
+  try {
+    await connectDB();
+    const brands = await Product.distinct('brand', { category: 'women' });
+    return brands.sort();
+  } catch (error) {
+    console.error('Failed to fetch women brands:', error);
+    return [];
+  }
+}
+
 export default async function WomenPage() {
   const products = await getWomenProducts();
+  const brands = await getWomenBrands();
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
@@ -34,7 +46,7 @@ export default async function WomenPage() {
       </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <ProductFilters products={products} />
+        <ProductFilters products={products} brands={brands} />
       </div>
     </div>
   );

@@ -36,6 +36,7 @@ export default function ProductFilters({ products, brands }: ProductFiltersProps
   const [selectedDiscount, setSelectedDiscount] = useState(0);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     setIsDesktop(window.innerWidth >= 1024);
@@ -48,6 +49,7 @@ export default function ProductFilters({ products, brands }: ProductFiltersProps
     return products.filter((product) => {
       const discountedPrice = product.price - (product.price * product.discount) / 100;
       
+      if (searchQuery && !product.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
       if (selectedBrand !== 'All' && product.brand !== selectedBrand) return false;
       if (discountedPrice < priceRanges[selectedPriceRange].min || discountedPrice > priceRanges[selectedPriceRange].max) return false;
       if (product.rating < selectedRating) return false;
@@ -55,16 +57,17 @@ export default function ProductFilters({ products, brands }: ProductFiltersProps
       
       return true;
     });
-  }, [products, selectedBrand, selectedPriceRange, selectedRating, selectedDiscount]);
+  }, [products, searchQuery, selectedBrand, selectedPriceRange, selectedRating, selectedDiscount]);
 
   const clearFilters = () => {
     setSelectedBrand('All');
     setSelectedPriceRange(0);
     setSelectedRating(0);
     setSelectedDiscount(0);
+    setSearchQuery('');
   };
 
-  const hasActiveFilters = selectedBrand !== 'All' || selectedPriceRange !== 0 || selectedRating !== 0 || selectedDiscount !== 0;
+  const hasActiveFilters = selectedBrand !== 'All' || selectedPriceRange !== 0 || selectedRating !== 0 || selectedDiscount !== 0 || searchQuery !== '';
 
   return (
     <div className="flex flex-col lg:flex-row gap-6">
@@ -198,6 +201,35 @@ export default function ProductFilters({ products, brands }: ProductFiltersProps
       </motion.aside>
 
       <div className="flex-1">
+        <div className="sticky top-0 z-40 py-4 bg-slate-50 dark:bg-slate-900 -mx-4 px-4">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-4 py-3 pl-12 bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 shadow-sm"
+            />
+            <svg
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
         <div className="mb-4 flex items-center justify-between">
           <p className="text-gray-600 dark:text-gray-400">
             Showing <span className="font-semibold text-gray-900 dark:text-white">{filteredProducts.length}</span> products

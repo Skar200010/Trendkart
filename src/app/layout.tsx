@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import Script from "next/script";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import AIChatbot from "@/components/AIChatbot";
 import { Providers } from "./providers";
 
 const geistSans = localFont({
@@ -79,8 +79,18 @@ export default function RootLayout({
           <main className="min-h-screen">{children}</main>
           <Footer />
           <WhatsAppButton />
-          <AIChatbot />
+          {/* <AIChatbot /> */}
         </Providers>
+        <Script id="noupe-chatbot" strategy="afterInteractive">
+          {`
+            var head = document.head || document.getElementsByTagName('head')[0];
+            var style = document.createElement('style');
+            style.id = 'noupe-chatbot-left';
+            style.innerHTML = '[data-noupe-widget] { left: 20px !important; right: auto !important; } [data-noupe-widget] iframe { left: 20px !important; right: auto !important; }';
+            head.appendChild(style);
+          `}
+        </Script>
+        <Script src="https://www.noupe.com/embed/019d1a622fdc7926b1238991668cc362c54d.js" strategy="afterInteractive" />
       </body>
     </html>
   );

@@ -36,17 +36,19 @@ export default async function WomenPage() {
   const brands = await getWomenBrands();
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      <section className="relative py-16 bg-gradient-to-r from-pink-500 to-rose-500">
+    <div className="bg-slate-50 dark:bg-slate-900">
+      <section className="relative py-12 md:py-16 bg-gradient-to-r from-pink-500 to-rose-500">
         <div className="absolute inset-0 bg-black/20" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white">Women&apos;s Fashion</h1>
-          <p className="mt-4 text-pink-100 text-lg">Discover elegant styles for women</p>
+          <h1 className="text-3xl md:text-4xl font-bold text-white">Women&apos;s Fashion</h1>
+          <p className="mt-2 text-pink-100 text-sm md:text-base">Discover elegant styles for women</p>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <ProductFilters products={products} brands={brands} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="lg:sticky lg:top-16 lg:z-20 lg:bg-slate-50 lg:dark:bg-slate-900 lg:py-4 lg:-mx-4 lg:px-4">
+          <ProductFilters products={products} brands={brands} />
+        </div>
       </div>
     </div>
   );

@@ -12,6 +12,12 @@ module.exports = {
     '!src/**/node_modules/**',
   ],
   transform: {
-    '^.+\\.(ts|tsx)$': ['ts-jest', { useESM: false }],
+    '^.+\\.(ts|tsx)$': ['ts-jest', { 
+      useESM: false, 
+      tsconfig: {
+        ...JSON.parse(JSON.stringify(require('./tsconfig.json').compilerOptions)),
+        jsx: 'react-jsx',
+      }
+    }],
   },
 };

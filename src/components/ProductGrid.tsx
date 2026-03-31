@@ -2,10 +2,22 @@
 
 import { motion } from 'framer-motion';
 import ProductCard from '@/components/ProductCard';
-import type { IProduct } from '@/models/Product';
+
+interface ProductData {
+  _id?: string;
+  title: string;
+  slug: string;
+  category: "men" | "women";
+  brand: string;
+  price: number;
+  discount: number;
+  rating: number;
+  image: string;
+  affiliateLink: string;
+}
 
 interface ProductGridProps {
-  products: IProduct[];
+  products: ProductData[];
   title?: string;
   viewAllLink?: string;
 }

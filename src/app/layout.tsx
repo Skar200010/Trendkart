@@ -93,7 +93,7 @@ export default function RootLayout({
         <Script src="https://www.noupe.com/embed/019d1a622fdc7926b1238991668cc362c54d.js" strategy="afterInteractive" />
         <Script id="cuelinks-widget" strategy="afterInteractive">
           {`
-            var clid = '271326';
+            var clid = '278756';
             (function(d, t) {
               var s = document.createElement('script');
               s.type = 'text/javascript';

@@ -20,13 +20,6 @@ interface Product {
   createdAt?: string;
 }
 
-interface PaginationInfo {
-  page: number;
-  limit: number;
-  total: number;
-  pages: number;
-}
-
 const tabs = [
   { id: 'products', label: 'Products', icon: (
     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,9 +46,6 @@ export default function AdminPage() {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [brandFilter, setBrandFilter] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
-  const [totalProducts, setTotalProducts] = useState(0);
 
   const [productForm, setProductForm] = useState({
     title: '',
@@ -97,26 +87,13 @@ export default function AdminPage() {
     if (user && activeTab === 'products') {
       fetchProducts();
     }
-  }, [user, activeTab, currentPage, itemsPerPage, categoryFilter, brandFilter, searchQuery, sortBy]);
+  }, [user, activeTab]);
 
   const fetchProducts = async () => {
     setProductsLoading(true);
     try {
-      const limit = itemsPerPage === 0 ? 0 : itemsPerPage;
-      const res = await axios.get('/api/products', {
-        params: {
-          page: currentPage,
-          limit: limit,
-          category: categoryFilter !== 'all' ? categoryFilter : undefined,
-          brand: brandFilter !== 'all' ? brandFilter : undefined,
-          search: searchQuery || undefined,
-          sort: sortBy,
-        }
-      });
+      const res = await axios.get('/api/products');
       setProducts(res.data.products);
-      if (res.data.pagination) {
-        setTotalProducts(res.data.pagination.total);
-      }
     } catch (error) {
       console.error('Failed to fetch products:', error);
     } finally {
@@ -127,14 +104,43 @@ export default function AdminPage() {
   const availableBrands = Array.from(new Set((products || []).map(p => p.brand).filter(Boolean))).sort();
 
   const filteredAndSortedProducts = useMemo(() => {
-    return products || [];
-  }, [products]);
-
-  const totalPages = itemsPerPage === 0 ? Math.ceil(totalProducts / 20) || 1 : Math.ceil(totalProducts / itemsPerPage);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery, categoryFilter, brandFilter, sortBy, itemsPerPage]);
+    let result = [...(products || [])];
+    
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(p => 
+        p.title.toLowerCase().includes(query) || 
+        (p.brand && p.brand.toLowerCase().includes(query))
+      );
+    }
+    
+    if (categoryFilter !== 'all') {
+      result = result.filter(p => p.category === categoryFilter);
+    }
+    
+    if (brandFilter !== 'all') {
+      result = result.filter(p => p.brand === brandFilter);
+    }
+    
+    switch (sortBy) {
+      case 'oldest':
+        result.sort((a, b) => new Date(a.createdAt || '').getTime() - new Date(b.createdAt || '').getTime());
+        break;
+      case 'price-low':
+        result.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-high':
+        result.sort((a, b) => b.price - a.price);
+        break;
+      case 'rating':
+        result.sort((a, b) => b.rating - a.rating);
+        break;
+      default:
+        result.sort((a, b) => new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime());
+    }
+    
+    return result;
+  }, [products, searchQuery, categoryFilter, brandFilter, sortBy]);
 
   if (!user) {
     return null;
@@ -478,7 +484,7 @@ export default function AdminPage() {
               <div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                   <h2 className="text-xl font-semibold text-text-primary">Product Inventory</h2>
-                  <p className="text-text-secondary text-sm">{totalProducts} total products</p>
+                  <p className="text-text-secondary text-sm">{products.length} total products</p>
                 </div>
 
                 <div className="card p-4 mb-6">
@@ -528,25 +534,12 @@ export default function AdminPage() {
                         <option value="price-high">Price: High to Low</option>
                         <option value="rating">Highest Rated</option>
                       </select>
-                      <select
-                        value={itemsPerPage}
-                        onChange={(e) => {
-                          setItemsPerPage(Number(e.target.value));
-                          setCurrentPage(1);
-                        }}
-                        className="px-4 py-2.5 bg-background border border-text-secondary/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-text-primary"
-                      >
-                        <option value="20">20 per page</option>
-                        <option value="50">50 per page</option>
-                        <option value="100">100 per page</option>
-                        <option value="0">Show All</option>
-                      </select>
                     </div>
                   </div>
                   {(searchQuery || categoryFilter !== 'all' || brandFilter !== 'all') && (
                     <div className="mt-4 flex items-center gap-2">
                       <span className="text-sm text-text-secondary">
-                        Showing {products.length} of {totalProducts} products
+                        Showing {filteredAndSortedProducts.length} of {products.length} products
                       </span>
                       <button
                         onClick={() => {
@@ -569,7 +562,7 @@ export default function AdminPage() {
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
                   </div>
-                ) : products.length === 0 ? (
+                ) : filteredAndSortedProducts.length === 0 ? (
                   <div className="card p-8 text-center">
                     <svg className="w-16 h-16 mx-auto text-text-secondary/50 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -592,7 +585,7 @@ export default function AdminPage() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
-                    {products.map((product, index) => (
+                    {filteredAndSortedProducts.map((product, index) => (
                       <motion.div
                         key={product._id}
                         initial={{ opacity: 0, y: 10 }}
@@ -672,40 +665,6 @@ export default function AdminPage() {
                   </div>
                 )}
               </div>
-
-              {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-6">
-                  <p className="text-sm text-text-secondary">
-                    {itemsPerPage === 0 
-                      ? `Showing all ${totalProducts} products`
-                      : `Showing ${(currentPage - 1) * itemsPerPage + 1} - ${Math.min(currentPage * itemsPerPage, totalProducts)} of ${totalProducts} products`
-                    }
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                      disabled={currentPage === 1}
-                      className="p-2 rounded-lg bg-background border border-text-secondary/20 text-text-secondary hover:text-primary hover:border-primary/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
-                    </button>
-                    <span className="text-sm text-text-secondary">
-                      Page {currentPage} of {totalPages}
-                    </span>
-                    <button
-                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                      disabled={currentPage === totalPages}
-                      className="p-2 rounded-lg bg-background border border-text-secondary/20 text-text-secondary hover:text-primary hover:border-primary/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              )}
             </motion.div>
           )}
 

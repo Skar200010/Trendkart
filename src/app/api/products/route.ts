@@ -67,11 +67,16 @@ export async function GET(request: Request) {
     else if (sort === 'price_desc') sortOption = { price: -1 };
     else if (sort === 'rating') sortOption = { rating: -1 };
     else if (sort === 'newest') sortOption = { createdAt: -1 };
+    else if (sort === 'oldest') sortOption = { createdAt: 1 };
     
     const skip = (page - 1) * limit;
     
+    const productsQuery = limit === 0 
+      ? Product.find(query).sort(sortOption)
+      : Product.find(query).sort(sortOption).skip(skip).limit(limit);
+    
     const [products, total] = await Promise.all([
-      Product.find(query).sort(sortOption).skip(skip).limit(limit),
+      productsQuery,
       Product.countDocuments(query)
     ]);
     

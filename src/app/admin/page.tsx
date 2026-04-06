@@ -170,8 +170,9 @@ export default function AdminPage() {
       } else {
         setMessage({ type: 'error', text: 'Failed to add product' });
       }
-    } catch (error) {
-      setMessage({ type: 'error', text: 'Error adding product' });
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.error || 'Error adding product';
+      setMessage({ type: 'error', text: errorMessage });
     } finally {
       setLoading(false);
     }
@@ -191,8 +192,9 @@ export default function AdminPage() {
       } else {
         setMessage({ type: 'error', text: 'Failed to add post' });
       }
-    } catch (error) {
-      setMessage({ type: 'error', text: 'Error adding post' });
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.error || 'Error adding post';
+      setMessage({ type: 'error', text: errorMessage });
     } finally {
       setLoading(false);
     }
@@ -206,8 +208,9 @@ export default function AdminPage() {
       await axios.delete(`/api/products/${id}`);
       setMessage({ type: 'success', text: 'Product deleted successfully!' });
       fetchProducts();
-    } catch (error) {
-      setMessage({ type: 'error', text: 'Failed to delete product' });
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.error || 'Failed to delete product';
+      setMessage({ type: 'error', text: errorMessage });
     } finally {
       setDeleteLoading(null);
     }

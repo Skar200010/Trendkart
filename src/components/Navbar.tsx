@@ -79,13 +79,13 @@ export default function Navbar() {
               <div className="relative w-10 h-10 md:w-12 md:h-12">
                 <Image
                   src="/trencarticon.png"
-                  alt="TrendKart"
+                  alt="TrendKartEasy"
                   fill
                   className="object-contain"
                 />
               </div>
               <span className="text-xl md:text-2xl font-bold text-text-primary ml-2">
-                Trend<span className="text-primary">Kart</span>
+                Trend<span className="text-primary">Kart</span>Easy
               </span>
             </Link>
           </div>
@@ -254,7 +254,7 @@ export default function Navbar() {
                       </div>
                       <div className="px-5 py-3 bg-gray-50 border-t border-gray-100">
                         <p className="text-xs text-gray-400 text-center">
-                          TrendKart Account
+                          TrendKartEasy Account
                         </p>
                       </div>
                     </motion.div>

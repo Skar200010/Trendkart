@@ -45,13 +45,13 @@ export default function Footer() {
               <div className="relative w-12 h-12">
                 <Image
                   src="/trencarticon.png"
-                  alt="TrendKart"
+                  alt="TrendKartEasy"
                   fill
                   className="object-contain"
                 />
               </div>
               <span className="text-2xl font-bold ml-2">
-                Trend<span className="text-primary">Kart</span>
+                Trend<span className="text-primary">Kart</span>Easy
               </span>
             </Link>
             <p className="mt-5 text-text-secondary max-w-sm leading-relaxed">
@@ -110,7 +110,7 @@ export default function Footer() {
         <div className="border-t border-text-secondary/10 mt-14 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-text-secondary text-sm">
-              © {new Date().getFullYear()} TrendKart. All rights reserved.
+              © {new Date().getFullYear()} TrendKartEasy. All rights reserved.
             </p>
             <p className="text-text-secondary text-sm flex items-center gap-1">
               Made with <span className="text-red-500">♥</span> for fashion lovers

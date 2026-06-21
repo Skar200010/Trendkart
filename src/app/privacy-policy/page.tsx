@@ -4,7 +4,7 @@ export default function PrivacyPolicyPage() {
       <h1 className="text-3xl font-bold mb-8">Privacy Policy</h1>
       <div className="prose max-w-none">
         <p className="text-gray-600 mb-4">
-          At TrendKart, we take your privacy seriously. This policy outlines how we collect, 
+          At TrendKartEasy, we take your privacy seriously. This policy outlines how we collect, 
           use, and protect your personal information.
         </p>
         <h2 className="text-xl font-semibold mt-6 mb-4">Information We Collect</h2>

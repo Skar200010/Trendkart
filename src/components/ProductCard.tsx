@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { motion } from 'framer-motion';
 
 interface ProductData {
@@ -76,11 +75,10 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
           transition={{ duration: 0.3 }}
           className="w-full h-full"
         >
-          <Image
+          <img
             src={product.image}
             alt={product.title}
-            fill
-            className="object-cover"
+            className="w-full h-full object-cover"
           />
         </motion.div>
         {product.discount > 0 && (

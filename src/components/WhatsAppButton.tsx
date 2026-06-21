@@ -8,7 +8,7 @@ interface WhatsAppButtonProps {
 
 export default function WhatsAppButton({ phoneNumber = '7045878466' }: WhatsAppButtonProps) {
   const handleClick = () => {
-    window.open(`https://wa.me/${phoneNumber}?text=Hi%20TrendKart,%20I%27m%20interested%20in%20your%20products!`, '_blank');
+    window.open(`https://wa.me/${phoneNumber}?text=Hi%20TrendKartEasy,%20I%27m%20interested%20in%20your%20products!`, '_blank');
   };
 
   return (
